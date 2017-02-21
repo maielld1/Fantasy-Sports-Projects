@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Data Table</title>
+      <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+  <html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Table Style</title>
+	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+</head>
+
+<body>
+<div class="table-title">
+<h3>Draftkings Lineup Optimizer</h3>
+</div>
+<form name="input" action="/static/optimizerNBA.py">
+          <input type="submit" value="Submit">
+</form>
+    <form action="" method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+         <input type=submit value=Upload>
+    </form>
+<table class="table-fill">
+<thead>
+<tr>
+<th class="text-left">Position</th>
+<th class="text-left">Player</th>
+<th class="text-left">Salary</th>
+<th class="text-left">Projection</th>
+<th class="text-left">Exclude</th>
+</tr>
+</thead>
+<tbody class="table-hover">
+    {% for i in range(8) %}
+        <tr id={{pos}}>
+            <td class="text-left"> {{ order[i] }}</td>
+            <td class="text-left"> {{ name[i] }}</td>
+            <td class="text-left">{{ salary[i] }}</td>
+            <td class="text-left">{{ points[i] }}</td>
+            <td><label><input type="checkbox">Exclude</label></td>
+        </tr>
+    {% endfor %}
+<tr>
+<td class="text-left">Total</td>
+<td class="text-left"></td>
+<td class="text-left">{{ total_sal }}</td>
+<td class="text-left">{{ total_pts }}</td>
+<td class="text-left"></td>
+</tr>
+</tbody>
+</table>
+
+
+  </body>
+
+
+</body>
+</html>
