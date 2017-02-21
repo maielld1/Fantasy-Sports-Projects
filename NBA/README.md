@@ -4,7 +4,7 @@ Flask app to optimize Rotogrinders projections for NBA DFS slates
 
 Try it at http://maielld1.pythonanywhere.com/
 
-For now the file needs to be named "RotogrindNBA.csv" and have the following column format:
+For now the file needs to have the following column format:
 
 player | salary| team| pos |opp |	ceil | floor | projection
 
