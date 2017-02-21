@@ -82,11 +82,13 @@ def knapsack(players):
 
             if player not in team:
                 pos_players = [ x for x in team if x.position == pos]
+                #print pos_players
                 pos_players.sort(key=lambda x: x.points)
+                #print pos_players
                 for pos_player in pos_players:
                     if (current_team_salary + sal - pos_player.salary) <= budget and pts > pos_player.points and val>v:
                         val_Added = ((sal-pos_player.salary)/(pts-pos_player.points)) #rough idea of value added by swapping players, needs improvement
-                        if val_Added<1000:
+                        if val_Added>1000:
                             team[team.index(pos_player)] = player
                             current_team_salary = current_team_salary + sal - pos_player.salary
                             points = 0

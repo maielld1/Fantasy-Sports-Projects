@@ -16,23 +16,22 @@ class Player():
     def __str__(self):
         return "{} {} {} {} {}".format(self.name,self.position,self.salary, self.points, self.team)
 
-with open('DKRotoProj.csv', 'r') as data:
+with open('RotoWeek1.csv', 'r') as data:
     reader = csv.reader(data)
     reader.next()
     players = []
     for row in reader:
         name = row[0]
         position = row[1]
-        salary = int(row[8])
-        points = float(row[9])
-        value = float(row[10])
+        salary = int(row[7])
+        points = float(row[8])
+        value = float(row[9])
         team = row[2]
         player = Player(position, name, salary, points, value, team)
         players.append(player)
 
-def knapsack(players):
+def knapsack(players, team, exclude, current_team_salary):
     budget = 50000
-    current_team_salary = 0
     constraints = {
         'QB':1,
         'RB':2,
@@ -51,23 +50,30 @@ def knapsack(players):
         'FLEX':0
         }
 
+    for player in team:
+        if player.position in counts.keys():
+            counts[player.position] = counts[player.position] + 1
+
+    print counts
+
     players.sort(key=lambda x: x.value, reverse=True)
-    team = []
 
     for player in players:
         nam = player.name
         pos = player.position
         sal = player.salary
         pts = player.points
-        if counts[pos] < constraints[pos] and current_team_salary + sal <= budget:
-            team.append(player)
-            counts[pos] = counts[pos] + 1
-            current_team_salary += sal
-            continue
-        if counts['FLEX'] < constraints['FLEX'] and current_team_salary + sal <= budget and pos in ['RB','WR','TE']:
-            team.append(player)
-            counts['FLEX'] = counts['FLEX'] + 1
-            current_team_salary += sal
+        if player not in team:
+            if counts[pos] < constraints[pos] and current_team_salary + sal <= budget and player not in exclude:
+                team.append(player)
+                counts[pos] = counts[pos] + 1
+                current_team_salary += sal
+                continue
+            if counts['FLEX'] < constraints['FLEX'] and current_team_salary + sal <= budget and pos in ['RB','WR','TE'] and player not in exclude:
+                pos = 'FLEX'
+                team.append(player)
+                counts['FLEX'] = counts['FLEX'] + 1
+                current_team_salary += sal
 
     players.sort(key=lambda x: x.points, reverse=True)
     v=3.0
@@ -81,9 +87,10 @@ def knapsack(players):
 
             if player not in team:
                 pos_players = [ x for x in team if x.position == pos]
+                print pos_players[0].points
                 pos_players.sort(key=lambda x: x.points)
                 for pos_player in pos_players:
-                    if (current_team_salary + sal - pos_player.salary) <= budget and pts > pos_player.points and val>v:
+                    if (current_team_salary + sal - pos_player.salary) <= budget and pts > pos_player.points and val>v and player not in exclude:
                         val_Added = ((sal-pos_player.salary)/(pts-pos_player.points)) #rough idea of value added by swapping players, needs improvement
                         if val_Added<1000:
                             team[team.index(pos_player)] = player
@@ -103,19 +110,31 @@ def knapsack(players):
                             print "Salary: {}".format(salary)
                             print "\n"
                             break
+
         v-=0.15
     return team
 
-
-team = knapsack(players)
-points = 0
-salary = 0
-print "\n"
-print "Final optimized team: "
-print "\n"
-for player in team:
-    points += player.points
-    salary += player.salary
-    print player
-print "\nPoints: {}".format(points)
-print "Salary: {}".format(salary)
+team = []
+stop = False
+exclude = []
+current_team_salary = 0
+while not stop:
+    team = knapsack(players, team, exclude, current_team_salary)
+    points = 0
+    current_team_salary = 0
+    print "\n"
+    print "Final optimized team: "
+    print "\n"
+    for player in team:
+        points += player.points
+        current_team_salary += player.salary
+        print player
+    print "\nPoints: {}".format(points)
+    print "Salary: {}".format(current_team_salary)
+    excludePlayer = raw_input('Exclude any players? Enter number of player or say No: ')
+    if excludePlayer == "No":
+        stop=True
+    else:
+        numPlayer=int(excludePlayer)
+        exclude.append(team[numPlayer-1])
+        team.pop(numPlayer-1)
